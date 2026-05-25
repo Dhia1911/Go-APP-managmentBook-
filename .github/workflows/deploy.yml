@@ -1,14 +1,26 @@
-name: Deploy
+name: Deploy to Heroku
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: akhileshns/heroku-deploy@v3.12.12
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Go
+        uses: actions/setup-go@v3
         with:
-          heroku_api_key: $
-          heroku_app_name: ""
-          heroku_email: "admin@fooshika.com"
+          go-version: '1.21'
+      - name: Login to Heroku
+        uses: heroku/login-action@v2
+        with:
+          api-key: ${{ secrets.HEROKU_API_KEY }}
+          email: ${{ secrets.HEROKU_EMAIL }}
+      - name: Deploy to Heroku
+        uses: heroku/deploy-v2@v2
+        with:
+          api-key: ${{ secrets.HEROKU_API_KEY }}
+          app-name: ${{ secrets.HEROKU_APP_NAME }}
+          yaml-version: v2
